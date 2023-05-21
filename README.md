@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Application Details
 |               |
 | ------------- |
@@ -40,3 +41,6 @@ Comparative Analysis MD
 1. Active NodeJS LTS (Long Term Support) version and associated supported NPM version.  (See https://nodejs.org)
 
 
+=======
+# mdcomparativeanalysis
+>>>>>>> afd03ac04f4ccd4b8e5f90bfab2733a6ffa8c0f1
