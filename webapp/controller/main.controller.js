@@ -279,8 +279,10 @@ sap.ui.define([
 
                 var costFields = [
                     { id: "Price", name: "Rate (Rs)" },
-                    { id: "gstExtra", name: "Extra GST" }
+                    { id: "gstExtra", name: "Extra GST" },
                     // { id: "remark", name: "Remark" }
+                    { id: "other", name: "Other Charges" },
+                    { id: "comments", name: "Comments" }
                 ];
                 for (var i in uniquSKUs) {
                     let filteredData = mdData.filter(function (item) {
@@ -292,8 +294,14 @@ sap.ui.define([
                         productData["Item Description"] = costFields[j].name;
                         for (let obj of filteredData) {
                             // nfaPackObj.Vendor = obj.vendorName;
-                            productData[obj.vendorName] = productData[obj.vendorName] ? parseFloat(productData[obj.vendorName]) + parseFloat(obj[costFields[j].id]) : obj[costFields[j].id];
-                        }
+                            if(costFields[j].id === "other" || costFields[j].id === "comments") {
+                                productData[obj.vendorName] = "";
+                                productData.editable = true;
+                            } else {
+                                productData[obj.vendorName] = productData[obj.vendorName] ? parseFloat(productData[obj.vendorName]) + parseFloat(obj[costFields[j].id]) : obj[costFields[j].id];
+                                productData.editable = false;
+                            }
+                            }
                         finalData.push(productData);
                     }
                 }
@@ -382,14 +390,22 @@ sap.ui.define([
 
                 var oCell = [];
                 var text;
+                var that = this;
                 for (let i = 0; i < uniqueColumnData.length; i++) {
                     
                         text = uniqueColumnData[i].columnName;
                     
-                    var cell1 = new sap.m.Text({
-                        text: "{" + text + "}",
-                        textAlign: sap.ui.core.TextAlign.Right
-                    });
+                    var cell1;
+                    if(text == "Item Description") {
+                        cell1 = new sap.m.Text({
+                            text: "{" + text + "}"
+                        });
+                    } else {
+                        cell1 = new sap.m.Input({
+                            value: "{" + text + "}",
+                            editable: "{editable}"
+                        });
+                    } 
                     oCell.push(cell1);
                 }
                 var aColList = new sap.m.ColumnListItem({
@@ -412,6 +428,10 @@ sap.ui.define([
                 oTable.getBinding("items").sort(aGroups);
                 let columnLength = oTable.getColumns().length;
                 oTable.getColumns()[columnLength-1].setVisible(false)
+            },
+
+            cellFormatter: function (sName) {
+                return sName;
             },
 
             handleNFASave: function () {
