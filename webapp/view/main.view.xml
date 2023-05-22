@@ -58,26 +58,8 @@
                                 </Table>
                         </IconTabFilter>
                         <IconTabFilter text="NFA Template" id="nfatemplate" key="nfatemplate">
-                            <form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="1" singleContainerFullSize="false">
-                                <form:content>
-                                    <core:Title/>
-                                   <!-- <Label text="Cash Discount" />
-                                    <Input value = ""/> -->
-                                    <Label text="Subject" class="sapUiTinyMarginBegin"/>
-                                    <Input id="subject" editable="true"/>
-                                    <Label text="Quantity" />
-                                    <Input value = "{nfaModel>/quantity}" editable="false"/>
-                                    <core:Title/>
-                                    <Label text="Payment Plan" />
-                                    <TextArea value = "{nfaModel>/paymentPlan}"/>
-                                    <Label text="Delivery" class="sapUiTinyMarginBegin"/>
-                                    <Input value = "{nfaModel>/deliveryPeriod}" editable="true"/>
-                                    <Label text="Quantity" />
-
-                                </form:content>
-                            </form:SimpleForm>
                             <VBox >
-                                <Label text="Justification" class="sapUiTinyMarginTop" design = "Bold"/>
+                                <Label text="Manual Text 1" class="sapUiTinyMarginTop" design = "Bold"/>
                                 <rte:RichTextEditor id="_IDGenRichTextEditor1" editorType="TinyMCE" width= "100%" height="5rem" customToolbar="false" showGroupFont= "true" showGroupLink= "true" showGroupInsert="true" value="{nfaModel>/Justification}">
                                 </rte:RichTextEditor>
                             </VBox>
@@ -85,18 +67,15 @@
                                  <Label text="Multi Vendor Split" class="sapUiTinyMarginTop" design = "Bold"/>
                                 <ui:Table id="nfaMultiVendorTable" enableSelectAll= "false" selectionMode="None" class="packingTableCSS"/>
                             </VBox> -->
-                            <VBox>
-                                 <Label text="Multi Vendor Split" class="sapUiTinyMarginTop" design = "Bold"/>
-                                <ui:Table id="nfaMultiVendorTable1" enableSelectAll= "false" selectionMode="None" class="packingTableCSS"/>
-                            </VBox>
-                            <VBox>
-                                <Label text="Pack Wise Price" class="sapUiTinyMarginTop" design = "Bold"/>
-                                <ui:Table id="nfaPackWiseTable" enableSelectAll= "false" selectionMode="None"/>
-                            </VBox>
+
                             <VBox >
-                                <Label text="Purchase Analysis" class="sapUiTinyMarginTop" design = "Bold"/>
+                                <Label text="Manual Text 2" class="sapUiTinyMarginTop" design = "Bold"/>
                                 <rte:RichTextEditor id="_IDGenRichTextEditor2" editorType="TinyMCE" width= "100%" height="5rem" customToolbar="false" showGroupFont= "true" showGroupLink= "true" showGroupInsert="true" value="{nfaModel>/purchaseAnalysis}">
                                 </rte:RichTextEditor>
+                            </VBox>
+                            <VBox >
+                                <Label text="General Terms and Conditions" class="sapUiTinyMarginTop" design = "Bold"/>
+                                <TextArea value="" width="100%" editable="false"></TextArea>
                             </VBox>
                         </IconTabFilter>
                     </items>
