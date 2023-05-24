@@ -89,7 +89,7 @@
                                     design="Bold"
                                 />
                                 <rte:RichTextEditor
-                                    id="_IDGenRichTextEditor1"
+                                    id="manualText1"
                                     editorType="TinyMCE"
                                     width="100%"
                                     height="5rem"
@@ -97,9 +97,16 @@
                                     showGroupFont="true"
                                     showGroupLink="true"
                                     showGroupInsert="true"
-                                    value="{nfaModel>/Justification}"
+                                    value=""
+                                    editable="false"
                                 />
                             </VBox>
+                            <VBox >
+                                <Label
+                                    text="Comparative Analysis"
+                                    class="sapUiTinyMarginTop"
+                                    design="Bold"
+                                />
                             <Table
                                 id="compartiveTable"
                                 class="sapUiLargeMarginTop tableCSS"
@@ -109,20 +116,21 @@
                                 backgroundDesign="Solid"
                                 noDataText="Select Filters to show data in Table"
                             />
+                            </VBox>
 
                             <!-- <VBox>
                                  <Label text="Multi Vendor Split" class="sapUiTinyMarginTop" design = "Bold"/>
                                 <ui:Table id="nfaMultiVendorTable" enableSelectAll= "false" selectionMode="None" class="packingTableCSS"/>
                             </VBox> -->
 
-                            <VBox>
+                            <VBox >
                                 <Label
                                     text="Manual Text 2"
                                     class="sapUiTinyMarginTop"
                                     design="Bold"
                                 />
                                 <rte:RichTextEditor
-                                    id="_IDGenRichTextEditor2"
+                                    id="manualText2"
                                     editorType="TinyMCE"
                                     width="100%"
                                     height="5rem"
@@ -130,7 +138,8 @@
                                     showGroupFont="true"
                                     showGroupLink="true"
                                     showGroupInsert="true"
-                                    value="{nfaModel>/purchaseAnalysis}"
+                                    value=""
+                                    editable="false"
                                 />
                             </VBox>
                             <VBox>

@@ -215,6 +215,8 @@ sap.ui.define([
                         if (resp.value.length > 0) {
                             this.showComparativeTable(resp.value);
                             this.comparativeTableData = resp.value;
+                            this.getView().byId("manualText1").setEditable(true);
+                            this.getView().byId("manualText2").setEditable(true);
                         }
 
                     }.bind(this),
