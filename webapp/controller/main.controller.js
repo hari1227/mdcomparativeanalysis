@@ -214,6 +214,7 @@ sap.ui.define([
                     success: function (resp) {
                         if (resp.value.length > 0) {
                             this.showComparativeTable(resp.value);
+                            this.comparaiveTableData = resp.value;
                         }
 
                     }.bind(this),
@@ -244,35 +245,6 @@ sap.ui.define([
                     }
                 }
 
-                // //Get Unique Vendors from the comparative Table
-                // var lookup = {};
-                // var items = mdData;//data.ComparativeAnalysis;
-                // var vendorList = [{ vendorName: "itemTitle", vendorEmailId: "" }];
-
-                // for (var item, i = 0; item = items[i++];) {
-                //     var name = item.vendorName + item.eventID;
-                //     //var eventID = item.eventID;
-
-                //     if (!(name in lookup)) {
-                //         lookup[name] = 1;
-                //         vendorList.push(items[i]);
-                //     }
-                // }
-
-                // // Function to sort the vendors
-                // function compare(curr, prev) {
-                //     if (curr.eventID < prev.eventID) {
-                //         return -1;
-                //     }
-                //     if (curr.eventID > prev.eventID) {
-                //         return 1;
-                //     }
-                //     return 0;
-                // }
-
-                // vendorList.sort(compare);
-                // this.vendorList = vendorList;
-
                 mdColumns.unshift({ columnName: "Item Description" });
                 mdColumns.push({ columnName: "item" });
 
@@ -285,42 +257,32 @@ sap.ui.define([
                     { id: "comments", name: "Comments" }
                 ];
                 for (var i in uniquSKUs) {
-                    let filteredData = mdData.filter(function (item) {
-                        return item.itemTitle == uniquSKUs[i];
-                    });
-                    for (var j in costFields) {
-                        productData = {};
-                        productData["item"] = uniquSKUs[i];
-                        productData["Item Description"] = costFields[j].name;
-                        for (let obj of filteredData) {
-                            // nfaPackObj.Vendor = obj.vendorName;
-                            if(costFields[j].id === "other" || costFields[j].id === "comments") {
-                                productData[obj.vendorName] = "";
-                                productData.editable = true;
-                            } else {
-                                productData[obj.vendorName] = productData[obj.vendorName] ? parseFloat(productData[obj.vendorName]) + parseFloat(obj[costFields[j].id]) : obj[costFields[j].id];
-                                productData.editable = false;
+                    
+
+                    for (let event of this.selectedEvents) {
+                        let filteredData = mdData.filter(function (item) {
+                            return item.itemTitle == uniquSKUs[i] && item.eventID == event;
+                        });
+                        for (var j in costFields) {
+                            productData = {};
+                            productData["item"] = uniquSKUs[i] + " (" + event + ")";
+                            //productData.vendorId = filteredData[0].vendorId;
+                            productData.eventID = filteredData[0].eventID;
+                            productData["Item Description"] = costFields[j].name;
+                            for (let obj of filteredData) {
+                                // nfaPackObj.Vendor = obj.vendorName;
+                                if (costFields[j].id === "other" || costFields[j].id === "comments") {
+                                    productData[obj.vendorName] = "";
+                                    productData.editable = true;
+                                } else {
+                                    productData[obj.vendorName] = productData[obj.vendorName] ? parseFloat(productData[obj.vendorName]) + parseFloat(obj[costFields[j].id]) : obj[costFields[j].id];
+                                    productData.editable = false;
+                                }
                             }
-                            }
-                        finalData.push(productData);
+                            finalData.push(productData);
+                        }
                     }
                 }
-
-
-                // var productCostObj = {};
-                // for (var j in costFields) {
-                //     productCostObj = {};
-                //     productCostObj.itemId = costFields[j].id;
-                //     productCostObj.Particulars = costFields[j].name;
-                //     for (var k in vendorList) {
-                //         let filteredCostData = mdData.filter(function (ca) {
-                //             return ca.vendorMailId == vendorList[k].vendorMailId;
-                //         });
-                //         productCostObj[vendorList[k].vendorName] = filteredCostData[costFields[j].id];
-                //     }
-                //     finalData.push(productCostObj);
-                // }
-
                 console.log(finalData);
                 this.generateComparativeTable(finalData, mdColumns);
             },
@@ -328,7 +290,7 @@ sap.ui.define([
             generateComparativeTable: function (finalData, uniqueColumnData) {
                 //this.nfaPackWisePrice = finalData;
                 // Create a Table for ComparativeAnalysis
-                 var oTable = this.getView().byId("compartiveTable");
+                var oTable = this.getView().byId("compartiveTable");
                 // var template;
 
                 // var finalModel = new sap.ui.model.json.JSONModel();
@@ -392,11 +354,11 @@ sap.ui.define([
                 var text;
                 var that = this;
                 for (let i = 0; i < uniqueColumnData.length; i++) {
-                    
-                        text = uniqueColumnData[i].columnName;
-                    
+
+                    text = uniqueColumnData[i].columnName;
+
                     var cell1;
-                    if(text == "Item Description") {
+                    if (text == "Item Description") {
                         cell1 = new sap.m.Text({
                             text: "{" + text + "}"
                         });
@@ -405,7 +367,7 @@ sap.ui.define([
                             value: "{" + text + "}",
                             editable: "{editable}"
                         });
-                    } 
+                    }
                     oCell.push(cell1);
                 }
                 var aColList = new sap.m.ColumnListItem({
@@ -415,19 +377,19 @@ sap.ui.define([
                 // console.log(data);
                 oTable.setModel(jsonModel);
                 oTable.bindItems("/", aColList);
-                
+
                 let aGroups = [];
-                var vGroup = function(oContext) {
-					var name = oContext.getProperty("item");
-					return {
-						key: name,
-						text: name
-					};
-				};
-				aGroups.push(new Sorter("item", false, vGroup));
+                var vGroup = function (oContext) {
+                    var name = oContext.getProperty("item");
+                    return {
+                        key: name,
+                        text: name
+                    };
+                };
+                aGroups.push(new Sorter("item", false, vGroup));
                 oTable.getBinding("items").sort(aGroups);
                 let columnLength = oTable.getColumns().length;
-                oTable.getColumns()[columnLength-1].setVisible(false)
+                oTable.getColumns()[columnLength - 1].setVisible(false);
             },
 
             cellFormatter: function (sName) {
@@ -487,23 +449,23 @@ sap.ui.define([
             },
 
             //Event will be triggered on icon tab bar selection change
-            onITBSelectionChange: function (oEvent) {
-                let key = oEvent.getSource().getSelectedKey();
-                if (key == "nfatemplate") {
-                    let rfqNumber = "7000000026"; //Temp -should be deleted.
-                    //let rfqNumber = this.getView().byId("rfqInput").getValue();
-                    let nfaData = this.getView().getModel("nfaModel").getProperty("/");
-                    if (Object.keys(nfaData).length === 0 && nfaData.constructor === Object) {
-                        this.readNFAData(rfqNumber, this.nfaEvent);
-                    }
-                    this.getView().byId("subject").setValue(this.nfaEventTitle);
-                    this.getView().byId("printPDF").setVisible(true);
-                    this.getView().byId("page").setShowFooter(true);
-                } else {
-                    this.getView().byId("printPDF").setVisible(false);
-                    this.getView().byId("page").setShowFooter(false);
-                }
-            }
+            // onITBSelectionChange: function (oEvent) {
+            //     let key = oEvent.getSource().getSelectedKey();
+            //     if (key == "nfatemplate") {
+            //         let rfqNumber = "7000000026"; //Temp -should be deleted.
+            //         //let rfqNumber = this.getView().byId("rfqInput").getValue();
+            //         let nfaData = this.getView().getModel("nfaModel").getProperty("/");
+            //         if (Object.keys(nfaData).length === 0 && nfaData.constructor === Object) {
+            //             this.readNFAData(rfqNumber, this.nfaEvent);
+            //         }
+            //         this.getView().byId("subject").setValue(this.nfaEventTitle);
+            //         this.getView().byId("printPDF").setVisible(true);
+            //         this.getView().byId("page").setShowFooter(true);
+            //     } else {
+            //         this.getView().byId("printPDF").setVisible(false);
+            //         this.getView().byId("page").setShowFooter(false);
+            //     }
+            // }
         });
     });
 

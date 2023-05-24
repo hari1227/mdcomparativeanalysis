@@ -1,37 +1,60 @@
-<mvc:View controllerName="mdcomparativeanalysis.controller.main"
+<mvc:View
+    controllerName="mdcomparativeanalysis.controller.main"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns:filterbar = "sap.ui.comp.filterbar"
+    xmlns:filterbar="sap.ui.comp.filterbar"
     xmlns:semantic="sap.f.semantic"
     xmlns:core="sap.ui.core"
     xmlns:form="sap.ui.layout.form"
     xmlns:smartTable="sap.ui.comp.smarttable"
     xmlns:ui="sap.ui.table"
-    xmlns:rte="sap.ui.richtexteditor">
-
-    <semantic:SemanticPage id="page" headerPinnable="false" toggleHeaderOnTitleClick="false" showFooter="false">
-
+    xmlns:rte="sap.ui.richtexteditor"
+>
+    <semantic:SemanticPage
+        id="page"
+        headerPinnable="false"
+        toggleHeaderOnTitleClick="false"
+        showFooter="true"
+    >
         <semantic:titleHeading>
-            <Title id="_IDGenTitle1" text="Comparative Analysis" level="H2"/>
+            <Title
+                id="_IDGenTitle1"
+                text="Comparative Analysis"
+                level="H2"
+            />
         </semantic:titleHeading>
 
         <semantic:content>
-
-            <VBox id="contentLayout">
-                <filterbar:FilterBar id="RFQFilter" search="onItemsFiltered">
+            <VBox id="mdContent">
+                <filterbar:FilterBar
+                    id="RFQFilter"
+                    search="onItemsFiltered"
+                >
                     <filterbar:filterGroupItems>
-                        <filterbar:FilterGroupItem id="RFQEventFilter" groupName="RFQEventFilter" label="RFQ Event" name="RFQEvent" partOfCurrentVariant="true" visibleInFilterBar="true" visible="true">
+                        <filterbar:FilterGroupItem
+                            id="RFQEventFilter"
+                            groupName="RFQEventFilter"
+                            label="RFQ Event"
+                            name="RFQEvent"
+                            partOfCurrentVariant="true"
+                            visibleInFilterBar="true"
+                            visible="true"
+                        >
                             <filterbar:control>
-                                <MultiInput id="RFQEventFilterValueHelp" suggestionRows="{ path: '/RFQEvents'}" valueHelpRequest=".onValueHelpRequested">
+                                <MultiInput
+                                    id="RFQEventFilterValueHelp"
+                                    suggestionRows="{ path: '/RFQEvents'}"
+                                    valueHelpRequest=".onValueHelpRequested"
+                                >
                                     <suggestionColumns>
                                         <Column>
-                                            <Label text="RFQ"/>
+                                            <Label text="RFQ" />
                                         </Column>
                                         <Column>
-                                            <Label text="Internal ID"/>
+                                            <Label text="Internal ID" />
                                         </Column>
                                         <Column>
-                                            <Label text="Title"/>
+                                            <Label text="Title" />
                                         </Column>
                                     </suggestionColumns>
                                     <suggestionRows>
@@ -42,54 +65,109 @@
                                         </ColumnListItem>
                                     </suggestionRows>
                                 </MultiInput>
-
                             </filterbar:control>
                         </filterbar:FilterGroupItem>
                     </filterbar:filterGroupItems>
                 </filterbar:FilterBar>
 
-                <IconTabBar id="comparativeAnalysis" expanded="{device>/isNoPhone}" class="sapUiResponsiveContentPadding" select="onITBSelectionChange">
+                <!-- <IconTabBar
+                    id="comparativeAnalysis"
+                    expanded="{device>/isNoPhone}"
+                    class="sapUiResponsiveContentPadding"
+                    select="onITBSelectionChange"
+                > 
                     <items>
-                        <IconTabFilter id="_IDGenIconTabFilter1" text="Comparative Analysis" key="ca">
-                            <!-- <smartTable:SmartTable id="_IDGenSmartTable1"> -->
-                            <!-- <ui:AnalyticalTable id="compartiveTable1" enableSelectAll= "false" selectionMode="None" enableGrouping = "true"/> -->
-                         <Table id="compartiveTable" class="sapUiLargeMarginTop tableCSS" growing="true" growingScrollToLoad="true" 
-                                    alternateRowColors="false" backgroundDesign="Transparent" noDataText="Select Filters to show data in Table">
-                                </Table>
-                        </IconTabFilter>
-                        <IconTabFilter text="NFA Template" id="nfatemplate" key="nfatemplate">
-                            <VBox >
-                                <Label text="Manual Text 1" class="sapUiTinyMarginTop" design = "Bold"/>
-                                <rte:RichTextEditor id="_IDGenRichTextEditor1" editorType="TinyMCE" width= "100%" height="5rem" customToolbar="false" showGroupFont= "true" showGroupLink= "true" showGroupInsert="true" value="{nfaModel>/Justification}">
-                                </rte:RichTextEditor>
+                        <IconTabFilter
+                            id="_IDGenIconTabFilter1"
+                            text="NFA"
+                            key="nfa"
+                        >-->
+                            <VBox>
+                                <Label
+                                    text="Manual Text 1"
+                                    class="sapUiTinyMarginTop"
+                                    design="Bold"
+                                />
+                                <rte:RichTextEditor
+                                    id="_IDGenRichTextEditor1"
+                                    editorType="TinyMCE"
+                                    width="100%"
+                                    height="5rem"
+                                    customToolbar="false"
+                                    showGroupFont="true"
+                                    showGroupLink="true"
+                                    showGroupInsert="true"
+                                    value="{nfaModel>/Justification}"
+                                />
                             </VBox>
+                            <Table
+                                id="compartiveTable"
+                                class="sapUiLargeMarginTop tableCSS"
+                                growing="true"
+                                growingScrollToLoad="true"
+                                alternateRowColors="false"
+                                backgroundDesign="Solid"
+                                noDataText="Select Filters to show data in Table"
+                            />
+
                             <!-- <VBox>
                                  <Label text="Multi Vendor Split" class="sapUiTinyMarginTop" design = "Bold"/>
                                 <ui:Table id="nfaMultiVendorTable" enableSelectAll= "false" selectionMode="None" class="packingTableCSS"/>
                             </VBox> -->
 
-                            <VBox >
-                                <Label text="Manual Text 2" class="sapUiTinyMarginTop" design = "Bold"/>
-                                <rte:RichTextEditor id="_IDGenRichTextEditor2" editorType="TinyMCE" width= "100%" height="5rem" customToolbar="false" showGroupFont= "true" showGroupLink= "true" showGroupInsert="true" value="{nfaModel>/purchaseAnalysis}">
-                                </rte:RichTextEditor>
+                            <VBox>
+                                <Label
+                                    text="Manual Text 2"
+                                    class="sapUiTinyMarginTop"
+                                    design="Bold"
+                                />
+                                <rte:RichTextEditor
+                                    id="_IDGenRichTextEditor2"
+                                    editorType="TinyMCE"
+                                    width="100%"
+                                    height="5rem"
+                                    customToolbar="false"
+                                    showGroupFont="true"
+                                    showGroupLink="true"
+                                    showGroupInsert="true"
+                                    value="{nfaModel>/purchaseAnalysis}"
+                                />
                             </VBox>
-                            <VBox >
-                                <Label text="General Terms and Conditions" class="sapUiTinyMarginTop" design = "Bold"/>
-                                <TextArea value="" width="100%" editable="false"></TextArea>
+                            <VBox>
+                                <Label
+                                    text="General Terms and Conditions"
+                                    class="sapUiTinyMarginTop"
+                                    design="Bold"
+                                />
+                                <TextArea
+                                    value=""
+                                    width="100%"
+                                    editable="false"
+                                />
                             </VBox>
-                        </IconTabFilter>
+                       <!-- </IconTabFilter>
                     </items>
-                </IconTabBar>
+                 </IconTabBar> -->
             </VBox>
         </semantic:content>
 
         <semantic:sendEmailAction>
-            <semantic:SendEmailAction id="shareEmail" press=".onShareEmailPress"/>
+            <semantic:SendEmailAction
+                id="shareEmail"
+                press=".onShareEmailPress"
+            />
         </semantic:sendEmailAction>
         <semantic:footerCustomActions>
-            <Button id="printPDF" text="Print NFA" press="onNFAPrint"/>
-            <Button id="savePDF" text="Save NFA" press="handleNFASave"/>
+            <Button
+                id="printPDF"
+                text="Print NFA"
+                press="onNFAPrint"
+            />
+            <Button
+                id="savePDF"
+                text="Save"
+                press="handleNFASave"
+            />
         </semantic:footerCustomActions>
     </semantic:SemanticPage>
-
 </mvc:View>
