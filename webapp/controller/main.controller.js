@@ -214,7 +214,7 @@ sap.ui.define([
                     success: function (resp) {
                         if (resp.value.length > 0) {
                             this.showComparativeTable(resp.value);
-                            this.comparaiveTableData = resp.value;
+                            this.comparativeTableData = resp.value;
                         }
 
                     }.bind(this),
@@ -397,55 +397,56 @@ sap.ui.define([
             },
 
             handleNFASave: function () {
-                var sData = this.getView().getModel("nfaModel").getProperty("/");
-                var finalData = JSON.parse(JSON.stringify(sData));
-                // Collect SKU with MRP Data
-                let packWiseTableRows = this.getView().byId("nfaPackWiseTable").getRows();
-                let objSKUMRPDetails = {}, arrSKUMRPDetails = [];
-                for (let item of packWiseTableRows) {
-                    objSKUMRPDetails = {};
-                    objSKUMRPDetails.SKUName = item.getCells()[0].getText();
-                    objSKUMRPDetails.eventID = this.nfaEvent;
-                    objSKUMRPDetails.Ebeln = "7000000026"; //this.rfqNumber;
-                    objSKUMRPDetails.MRP = item.getCells()[5].getValue();
-                    arrSKUMRPDetails.push(objSKUMRPDetails);
+                let aChangedData = this.getView().byId("compartiveTable").getModel().getProperty("/");
+                let comparativeTableData = JSON.parse(JSON.stringify(this.comparativeTableData));
+                // map changed table data with the backend structure
+                for(let i=0;i< comparativeTableData.length; i++) {
+                    let commentData = aChangedData.find(item => item.item == (comparativeTableData[i].itemTitle + " (" + comparativeTableData[i].eventID + ")") && item.eventID == comparativeTableData[i].eventID && item["Item Description"] === "Comments");
+                    comparativeTableData[i].comments = commentData[comparativeTableData[i].vendorName];
+                    let otherCharges = aChangedData.find(item => item.item == (comparativeTableData[i].itemTitle + " (" + comparativeTableData[i].eventID + ")") && item.eventID == comparativeTableData[i].eventID && item["Item Description"] === "Other Charges");
+                    comparativeTableData[i].otherCharges = otherCharges[comparativeTableData[i].vendorName];
+                    delete comparativeTableData[i].modifiedBy;
+                    delete comparativeTableData[i].modifiedAt;
+                    delete comparativeTableData[i].createdAt;
+                    delete comparativeTableData[i].createdBy;
                 }
-                finalData.cpcSkuMRPDetais = arrSKUMRPDetails;
+
+                console.log(comparativeTableData);
 
                 var settings = {
                     async: false,
-                    url: this.appModulePath + "/comparative-analysis/cpcNFADetails",
+                    url: this.appModulePath + "/comparative-analysis/mdRFQEventItems",
                     method: "POST",
                     headers: {
                         "content-type": "application/json"
                         // "X-CSRF-Token": token
                     },
                     processData: false,
-                    data: JSON.stringify(finalData)
+                    data: JSON.stringify(comparativeTableData)
                 };
-                this.getView().setBusy(true);
-                $.ajax(settings)
-                    .done(function (response) {
-                        this.getView().setBusy(false);
-                        MessageBox.success("Data Saved Successfully");
-                    }.bind(this)
-                    )
-                    .fail(function (error) {
-                        this.getView().setBusy(false);
-                        var errorMessage = error.responseJSON.error.message;
-                        if (errorMessage.startsWith("Reference integrity is violated for association")) {
-                            var associatedField = error.responseJSON.error.target.split(".")[1].toLowerCase();
-                            MessageBox.error("Invalid value for field : " + associatedField);
-                            throw new Error("");
-                        } else if (errorMessage.startsWith("Entity already exists")) {
-                            MessageBox.error("Entity already exists");
-                            throw new Error("");
-                        }
-                        else {
-                            MessageBox.error(error.responseText);
-                            return;
-                        }
-                    }.bind(this));
+                // this.getView().setBusy(true);
+                // $.ajax(settings)
+                //     .done(function (response) {
+                //         this.getView().setBusy(false);
+                //         MessageBox.success("Data Saved Successfully");
+                //     }.bind(this)
+                //     )
+                //     .fail(function (error) {
+                //         this.getView().setBusy(false);
+                //         var errorMessage = error.responseJSON.error.message;
+                //         if (errorMessage.startsWith("Reference integrity is violated for association")) {
+                //             var associatedField = error.responseJSON.error.target.split(".")[1].toLowerCase();
+                //             MessageBox.error("Invalid value for field : " + associatedField);
+                //             throw new Error("");
+                //         } else if (errorMessage.startsWith("Entity already exists")) {
+                //             MessageBox.error("Entity already exists");
+                //             throw new Error("");
+                //         }
+                //         else {
+                //             MessageBox.error(error.responseText);
+                //             return;
+                //         }
+                //     }.bind(this));
             },
 
             //Event will be triggered on icon tab bar selection change
