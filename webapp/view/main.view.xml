@@ -170,7 +170,7 @@
                         editable="false"
                     />
                 </VBox>
-                <VBox>
+                <!-- <VBox>
                     <Label
                         text="General Terms and Conditions"
                         class="sapUiTinyMarginTop"
@@ -181,7 +181,7 @@
                         width="100%"
                         editable="false"
                     />
-                </VBox>
+                </VBox> -->
                 <!-- </IconTabFilter>
                     </items>
                  </IconTabBar> -->
