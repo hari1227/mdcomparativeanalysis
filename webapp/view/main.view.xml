@@ -32,13 +32,44 @@
                 >
                     <filterbar:filterGroupItems>
                         <filterbar:FilterGroupItem
+                            id="_IDGenFilterGroupItem1"
+                            groupName="RFQFilter"
+                            label="RFQ"
+                            name="Ebeln"
+                            partOfCurrentVariant="true"
+                            visibleInFilterBar="true"
+                        >
+                            <filterbar:control>
+                                <!-- <ComboBox id="RFQFilterCombo" items="{ path: '/RFQList'}" selectionChange=".onRFQSelection">
+                                    <core:Item id="RFQFilterItems" key="{Ebeln}" text="{Ebeln}"/>
+                                </ComboBox> -->
+                                <Input
+                                    id="rfqInput"
+                                    textFormatMode="KeyValue"
+                                    placeholder="Enter RFQ"
+                                    showSuggestion="true"
+                                    showValueHelp="true"
+                                    valueHelpRequest=".onRFQValueHelpRequest"
+                                    suggestionItems="{path: '/RFQList', filters: [{path: 'Department', operator: 'EQ', value1: 'Market Development'}]}"
+                                    suggestionItemSelected=".onSuggestionItemSelected"
+                                >
+                                    <suggestionItems>
+                                        <core:ListItem
+                                            key="{Ebeln}"
+                                            text="{Ebeln}"
+                                        />
+                                    </suggestionItems>
+                                </Input>
+                            </filterbar:control>
+                        </filterbar:FilterGroupItem>
+                        <filterbar:FilterGroupItem
                             id="RFQEventFilter"
                             groupName="RFQEventFilter"
                             label="RFQ Event"
                             name="RFQEvent"
                             partOfCurrentVariant="true"
                             visibleInFilterBar="true"
-                            visible="true"
+                            visible="false"
                         >
                             <filterbar:control>
                                 <MultiInput
@@ -82,79 +113,76 @@
                             text="NFA"
                             key="nfa"
                         >-->
-                            <VBox>
-                                <Label
-                                    text="Manual Text 1"
-                                    class="sapUiTinyMarginTop"
-                                    design="Bold"
-                                />
-                                <rte:RichTextEditor
-                                    id="manualText1"
-                                    editorType="TinyMCE"
-                                    width="100%"
-                                    height="5rem"
-                                    customToolbar="false"
-                                    showGroupFont="true"
-                                    showGroupLink="true"
-                                    showGroupInsert="true"
-                                    value=""
-                                    editable="false"
-                                />
-                            </VBox>
-                            <VBox >
-                                <Label
-                                    text="Comparative Analysis"
-                                    class="sapUiTinyMarginTop"
-                                    design="Bold"
-                                />
-                            <Table
-                                id="compartiveTable"
-                                class="sapUiLargeMarginTop tableCSS"
-                                growing="true"
-                                growingScrollToLoad="true"
-                                alternateRowColors="false"
-                                backgroundDesign="Solid"
-                                noDataText="Select Filters to show data in Table"
-                            />
-                            </VBox>
+                <VBox>
+                    <Label
+                        text="Manual Text 1"
+                        class="sapUiTinyMarginTop"
+                        design="Bold"
+                    />
+                    <rte:RichTextEditor
+                        id="manualText1"
+                        editorType="TinyMCE"
+                        width="100%"
+                        height="5rem"
+                        customToolbar="false"
+                        showGroupFont="true"
+                        showGroupLink="true"
+                        showGroupInsert="true"
+                        value="{nfaModel>/manualText1}"
+                        editable="false"
+                    />
+                </VBox>
+                <VBox>
+                    <Label
+                        text="Comparative Analysis"
+                        class="sapUiTinyMarginTop"
+                        design="Bold"
+                    />
+                    <Table
+                        id="compartiveTable"
+                        class="sapUiLargeMarginTop tableCSS"
+                        noDataText="Select Filters to show data in Table"
+                        inset="false"
+                    />
+                </VBox>
 
-                            <!-- <VBox>
+                <!-- <VBox>
                                  <Label text="Multi Vendor Split" class="sapUiTinyMarginTop" design = "Bold"/>
                                 <ui:Table id="nfaMultiVendorTable" enableSelectAll= "false" selectionMode="None" class="packingTableCSS"/>
                             </VBox> -->
 
-                            <VBox >
-                                <Label
-                                    text="Manual Text 2"
-                                    class="sapUiTinyMarginTop"
-                                    design="Bold"
-                                />
-                                <rte:RichTextEditor
-                                    id="manualText2"
-                                    editorType="TinyMCE"
-                                    width="100%"
-                                    height="5rem"
-                                    customToolbar="false"
-                                    showGroupFont="true"
-                                    showGroupLink="true"
-                                    showGroupInsert="true"
-                                    value=""
-                                    editable="false"
-                                />
-                            </VBox>
-                            <VBox>
-                                <Label
-                                    text="General Terms and Conditions"
-                                    class="sapUiTinyMarginTop"
-                                    design="Bold"
-                                />
-                                <TextArea
-                                    value=""
-                                    width="100%"
-                                    editable="false"
-                                />
-                            </VBox>
-                       <!-- </IconTabFilter>
+                <VBox>
+                    <Label
+                        text="Manual Text 2"
+                        class="sapUiTinyMarginTop"
+                        design="Bold"
+                    />
+                    <rte:RichTextEditor
+                        id="manualText2"
+                        editorType="TinyMCE"
+                        width="100%"
+                        height="5rem"
+                        customToolbar="false"
+                        showGroupFont="true"
+                        showGroupLink="true"
+                        showGroupInsert="true"
+                        value="{nfaModel>/manualText2}"
+                        editable="false"
+                    />
+                </VBox>
+                <VBox>
+                    <Label
+                        text="General Terms and Conditions"
+                        class="sapUiTinyMarginTop"
+                        design="Bold"
+                    />
+                    <TextArea
+                        value=""
+                        width="100%"
+                        editable="false"
+                    />
+                </VBox>
+                <!-- </IconTabFilter>
                     </items>
                  </IconTabBar> -->
             </VBox>

@@ -23,53 +23,12 @@ sap.ui.define([
                 let appId = this.getOwnerComponent().getManifestEntry("/sap.app/id");
                 let appPath = appId.replaceAll(".", "/");
                 this.appModulePath = jQuery.sap.getModulePath(appPath);
-                var nfaModel = new JSONModel();
-                this.getView().setModel(nfaModel, "nfaModel");
+                // var nfaModel = new JSONModel();
+                // this.getView().setModel(nfaModel, "nfaModel");
                 // this.nfaData = {
                 // };
 
                 // this.readNFAData("7000000026", "Doc652480915");
-            },
-
-            readNFAData: function (rfqNumber, eventId) {
-
-                var data = {
-                    "rfqNumber": rfqNumber,
-                    "eventId": eventId,
-                }
-                // var token = this.fetchToken();
-                var settings = {
-                    async: true,
-                    url: this.appModulePath + "/comparative-analysis/getcpcNfaDetails",
-                    method: "POST",
-                    headers: {
-                        "content-type": "application/json"
-                    },
-                    processData: false,
-                    data: JSON.stringify(data)
-                };
-                // this.getView().setBusy(true);
-                $.ajax(settings)
-                    .done(function (response) {
-                        this.getView().getModel("nfaModel").setProperty("/", response.value[0]);
-                        this.showNFAPackWisePrice(response.value[0].cpcNFAPackWisePriceDetails);
-                        this.showNFAPricingTable(response.value[0].cpcNFAPackWisePriceDetails);
-                    }.bind(this)).fail(function () {
-
-                    });
-
-                let urlFilter = "?$filter=Ebeln_Ebeln eq '" + rfqNumber + "'" + " and internalId eq '" + eventId + "'";
-                $.get({
-                    url: this.appModulePath + "/comparative-analysis/RFQEvents" + urlFilter, //"./comparative-analysis/RFQEventCompDetails",
-                    success: function (resp) {
-                        this.nfaEventTitle = resp.value[0].title;
-
-                    }.bind(this),
-                    error: function (error) {
-                        console.log(error);
-                    }
-                });
-
             },
 
             // #region Value Help Dialog standard use case with filter bar without filter suggestions
@@ -123,6 +82,7 @@ sap.ui.define([
                                 filters: [
                                     new Filter({ path: "Ebeln/Department", operator: 'EQ', value1: "Market Development" }),
                                     new Filter({ path: "status", operator: 'EQ', value1: "Pending Selection" }),
+                                    new Filter({ path: "Ebeln_Ebeln", operator: 'EQ', value1: this.getView().byId("rfqInput").getSelectedKey() }),
                                 ],
                                 and: true
                             }));
@@ -187,7 +147,50 @@ sap.ui.define([
                 this._oVHD.close();
             },
 
+            // Value Help Request for the RFQ List
+            onRFQValueHelpRequest: function (oEvent) {
+                var sInputValue = oEvent.getSource().getValue(),
+                    oView = this.getView();
 
+                if (!this._pValueHelpDialog) {
+                    this._pValueHelpDialog = Fragment.load({
+                        id: oView.getId(),
+                        name: "mdcomparativeanalysis.view.RFQListValueHelp",
+                        controller: this
+                    }).then(function (oDialog) {
+                        oView.addDependent(oDialog);
+                        return oDialog;
+                    });
+                }
+                this._pValueHelpDialog.then(function (oDialog) {
+                    // Create a filter for the binding
+                    oDialog.getBinding("items").filter([new Filter("Department", FilterOperator.Contains, "Market Development")]);
+                    // Open ValueHelpDialog filtered by the input's value
+                    oDialog.open(sInputValue);
+                });
+            },
+
+            onRFQValueHelpDialogSearch: function (oEvent) {
+                var sValue = oEvent.getParameter("value");
+                var oFilter = new Filter("Ebeln", FilterOperator.Contains, sValue);
+
+                oEvent.getSource().getBinding("items").filter([oFilter]);
+            },
+            onRFQValueHelpDialogClose: function (oEvent) {
+                var sDescription,
+                    oSelectedItem = oEvent.getParameter("selectedItem");
+                //oEvent.getSource().getBinding("items").filter([]);
+
+                if (!oSelectedItem) {
+                    return;
+                }
+
+                sDescription = oSelectedItem.getTitle();
+
+                this.byId("rfqInput").setSelectedKey(sDescription);
+                //this.byId("selectedKeyIndicator").setText(sDescription);
+                this.getView().byId("RFQEventFilter").setVisible(true);
+            },
 
             onSuggestionItemSelected: function (oEvent) {
                 var oItem = oEvent.getParameter("selectedItem");
@@ -215,8 +218,6 @@ sap.ui.define([
                         if (resp.value.length > 0) {
                             this.showComparativeTable(resp.value);
                             this.comparativeTableData = resp.value;
-                            this.getView().byId("manualText1").setEditable(true);
-                            this.getView().byId("manualText2").setEditable(true);
                         }
 
                     }.bind(this),
@@ -225,12 +226,32 @@ sap.ui.define([
                     }
                 });
 
+
+
                 var nfaModel = new JSONModel();
                 this.getView().setModel(nfaModel, "nfaModel");
-                // this.nfaData = {
-                // };
-                this.nfaEvent = this.selectedEvents.slice(-1)[0];
-                //this.readNFAData(rfqNumber, this.nfaEvent);
+
+                let urlFilter = "?$filter=Ebeln eq '" + this.getView().byId("rfqInput").getSelectedKey() + "'";
+                // var token = this.fetchToken();
+                $.get({
+                    url: this.appModulePath + "/comparative-analysis/mdNFADetails" + urlFilter,
+                    success: function (resp) {
+                        if (resp.value.length > 0) {
+                            this.getView().getModel("nfaModel").setProperty("/", resp.value[0]);
+                            this.getView().getModel("nfaModel").refresh();
+                        } else {
+                            // this.getView().byId("manualText1").setValue("");
+                            // this.getView().byId("manualText2").setValue("");
+                        }
+
+                        this.getView().byId("manualText1").setEditable(true);
+                        this.getView().byId("manualText2").setEditable(true);
+
+                    }.bind(this),
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
 
             },
 
@@ -255,11 +276,11 @@ sap.ui.define([
                     { id: "Price", name: "Rate (Rs)" },
                     { id: "gstExtra", name: "Extra GST" },
                     // { id: "remark", name: "Remark" }
-                    { id: "other", name: "Other Charges" },
+                    { id: "otherExpenses", name: "Other Charges" },
                     { id: "comments", name: "Comments" }
                 ];
                 for (var i in uniquSKUs) {
-                    
+
 
                     for (let event of this.selectedEvents) {
                         let filteredData = mdData.filter(function (item) {
@@ -273,8 +294,8 @@ sap.ui.define([
                             productData["Item Description"] = costFields[j].name;
                             for (let obj of filteredData) {
                                 // nfaPackObj.Vendor = obj.vendorName;
-                                if (costFields[j].id === "other" || costFields[j].id === "comments") {
-                                    productData[obj.vendorName] = "";
+                                if (costFields[j].id === "otherExpenses" || costFields[j].id === "comments") {
+                                    productData[obj.vendorName] = obj[costFields[j].id];
                                     productData.editable = true;
                                 } else {
                                     productData[obj.vendorName] = productData[obj.vendorName] ? parseFloat(productData[obj.vendorName]) + parseFloat(obj[costFields[j].id]) : obj[costFields[j].id];
@@ -290,6 +311,8 @@ sap.ui.define([
             },
 
             generateComparativeTable: function (finalData, uniqueColumnData) {
+                this.finalTableData = finalData;
+                this.uniqueColumnData = uniqueColumnData;
                 //this.nfaPackWisePrice = finalData;
                 // Create a Table for ComparativeAnalysis
                 var oTable = this.getView().byId("compartiveTable");
@@ -402,73 +425,67 @@ sap.ui.define([
                 let aChangedData = this.getView().byId("compartiveTable").getModel().getProperty("/");
                 let comparativeTableData = JSON.parse(JSON.stringify(this.comparativeTableData));
                 // map changed table data with the backend structure
-                for(let i=0;i< comparativeTableData.length; i++) {
+                for (let i = 0; i < comparativeTableData.length; i++) {
                     let commentData = aChangedData.find(item => item.item == (comparativeTableData[i].itemTitle + " (" + comparativeTableData[i].eventID + ")") && item.eventID == comparativeTableData[i].eventID && item["Item Description"] === "Comments");
                     comparativeTableData[i].comments = commentData[comparativeTableData[i].vendorName];
                     let otherCharges = aChangedData.find(item => item.item == (comparativeTableData[i].itemTitle + " (" + comparativeTableData[i].eventID + ")") && item.eventID == comparativeTableData[i].eventID && item["Item Description"] === "Other Charges");
-                    comparativeTableData[i].otherCharges = otherCharges[comparativeTableData[i].vendorName];
-                    delete comparativeTableData[i].modifiedBy;
-                    delete comparativeTableData[i].modifiedAt;
-                    delete comparativeTableData[i].createdAt;
-                    delete comparativeTableData[i].createdBy;
+                    comparativeTableData[i].otherExpenses = otherCharges[comparativeTableData[i].vendorName];
+                    // delete comparativeTableData[i].modifiedBy;
+                    // delete comparativeTableData[i].modifiedAt;
+                    // delete comparativeTableData[i].createdAt;
+                    // delete comparativeTableData[i].createdBy;
                 }
 
                 console.log(comparativeTableData);
-
+                let sData = this.getView().getModel("nfaModel").getProperty("/");
+                // let finalData = {
+                //     "Ebeln": this.getView().byId("rfqInput").getSelectedKey(),
+                //     "manualText1": this.getView().byId("manualText1").getValue(),
+                //     "manualText2": this.getView().byId("manualText2").getValue()
+                // };
+                let finalData = JSON.parse(JSON.stringify(sData));
+                finalData.mdItemDetails = comparativeTableData;
                 var settings = {
                     async: false,
-                    url: this.appModulePath + "/comparative-analysis/mdRFQEventItems",
+                    url: this.appModulePath + "/comparative-analysis/mdNFADetails",
                     method: "POST",
                     headers: {
                         "content-type": "application/json"
                         // "X-CSRF-Token": token
                     },
                     processData: false,
-                    data: JSON.stringify(comparativeTableData)
+                    data: JSON.stringify(finalData)
                 };
-                // this.getView().setBusy(true);
-                // $.ajax(settings)
-                //     .done(function (response) {
-                //         this.getView().setBusy(false);
-                //         MessageBox.success("Data Saved Successfully");
-                //     }.bind(this)
-                //     )
-                //     .fail(function (error) {
-                //         this.getView().setBusy(false);
-                //         var errorMessage = error.responseJSON.error.message;
-                //         if (errorMessage.startsWith("Reference integrity is violated for association")) {
-                //             var associatedField = error.responseJSON.error.target.split(".")[1].toLowerCase();
-                //             MessageBox.error("Invalid value for field : " + associatedField);
-                //             throw new Error("");
-                //         } else if (errorMessage.startsWith("Entity already exists")) {
-                //             MessageBox.error("Entity already exists");
-                //             throw new Error("");
-                //         }
-                //         else {
-                //             MessageBox.error(error.responseText);
-                //             return;
-                //         }
-                //     }.bind(this));
+                this.getView().setBusy(true);
+                $.ajax(settings)
+                    .done(function (response) {
+                        this.getView().setBusy(false);
+                        MessageBox.success("Data Saved Successfully");
+                    }.bind(this)
+                    )
+                    .fail(function (error) {
+                        this.getView().setBusy(false);
+                        var errorMessage = error.responseJSON.error.message;
+                        if (errorMessage.startsWith("Entity already exists")) {
+                            MessageBox.error("Entity already exists");
+                            throw new Error("");
+                        }
+                        else {
+                            MessageBox.error(error.responseText);
+                            return;
+                        }
+                    }.bind(this));
             },
 
-            //Event will be triggered on icon tab bar selection change
-            // onITBSelectionChange: function (oEvent) {
-            //     let key = oEvent.getSource().getSelectedKey();
-            //     if (key == "nfatemplate") {
-            //         let rfqNumber = "7000000026"; //Temp -should be deleted.
-            //         //let rfqNumber = this.getView().byId("rfqInput").getValue();
-            //         let nfaData = this.getView().getModel("nfaModel").getProperty("/");
-            //         if (Object.keys(nfaData).length === 0 && nfaData.constructor === Object) {
-            //             this.readNFAData(rfqNumber, this.nfaEvent);
-            //         }
-            //         this.getView().byId("subject").setValue(this.nfaEventTitle);
-            //         this.getView().byId("printPDF").setVisible(true);
-            //         this.getView().byId("page").setShowFooter(true);
-            //     } else {
-            //         this.getView().byId("printPDF").setVisible(false);
-            //         this.getView().byId("page").setShowFooter(false);
-            //     }
-            // }
+            // Function to print the NFA document
+            onNFAPrint: function () {
+
+                let tableData = this.finalTableData;
+                let columnData = this.uniqueColumnData;
+                let manualText1 = this.getView().byId("manualText1").getValue();
+                let manualText2 = this.getView().byId("manualText2").getValue();
+
+            }
         });
     });
 
