@@ -69,13 +69,14 @@
                             name="RFQEvent"
                             partOfCurrentVariant="true"
                             visibleInFilterBar="true"
-                            visible="false"
+                            
                         >
                             <filterbar:control>
                                 <MultiInput
                                     id="RFQEventFilterValueHelp"
                                     suggestionRows="{ path: '/RFQEvents'}"
                                     valueHelpRequest=".onValueHelpRequested"
+                                    enabled="false"
                                 >
                                     <suggestionColumns>
                                         <Column>
@@ -204,6 +205,22 @@
                 id="savePDF"
                 text="Save"
                 press="handleNFASave"
+            />
+
+            <Button
+                id="syncRFQ"
+                text="Sync RFQ's"
+                icon="sap-icon://synchronize"
+                press="handlePressSyncRfq"
+            />
+
+            <Button
+                id="syncRFQEvents"
+                type="Emphasized"
+                icon="sap-icon://synchronize"
+                text="Sync RFQ Events"
+                press="handleSyncRFQEvent"
+                enabled="false"
             />
         </semantic:footerCustomActions>
     </semantic:SemanticPage>
