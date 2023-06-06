@@ -305,9 +305,9 @@ sap.ui.define([
                 var costFields = [
                     { id: "Price", name: "Rate (Rs)" },
                     { id: "gstExtra", name: "Extra GST" },
-                    { id: "remark", name: "Remark" },
                     { id: "otherExpenses", name: "Other Charges" },
-                    { id: "comments", name: "Comments" }
+                    { id: "comments", name: "Comments"},
+                    { id: "remark", name: "Remark" } 
                 ];
                 for (var i in uniquSKUs) {
 
