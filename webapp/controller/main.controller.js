@@ -529,6 +529,8 @@ sap.ui.define([
                 const csTableColumns = this.uniqueColumnData;
                 const manualText1 = this.getView().byId("manualText1").getValue();
                 const manualText2 = this.getView().byId("manualText2").getValue();
+                const RFQ = this.getView().byId("rfqInput").getSelectedKey();
+
                 // TODO: Update this data once get the actual data
                 const termsAndConditions = "The Specification, General terms and Conditions shall be as Under";
 
