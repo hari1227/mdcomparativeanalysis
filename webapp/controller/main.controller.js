@@ -526,10 +526,21 @@ sap.ui.define([
             // Function to print the NFA document
             onNFAPrint: function () {
                 const csTableData = this.finalTableData;
-                const csTableColumns = this.uniqueColumnData;
+                const csTableColumns = this.uniqueColumnData.slice(0, this.uniqueColumnData.length - 1);
                 const manualText1 = this.getView().byId("manualText1").getValue();
                 const manualText2 = this.getView().byId("manualText2").getValue();
-                const RFQ = this.getView().byId("rfqInput").getSelectedKey();
+                const RFQNumber = this.getView().byId("rfqInput").getSelectedKey();
+
+                const { tableData: groupedData } = csTableData.reduce((acc, row) => {
+                    if(!acc.dict[row.item]) {
+                        acc.dict[row.item] = row.item
+                        acc.tableData.push({name: row.item, isGroupItem: true});
+                    }
+                    acc.tableData.push(row)
+                    return acc
+                }, {dict: {}, tableData: []})
+
+                console.log({csTableData, csTableColumns})
 
                 // TODO: Update this data once get the actual data
                 const termsAndConditions = "The Specification, General terms and Conditions shall be as Under";
@@ -572,11 +583,14 @@ sap.ui.define([
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${csTableData?.reduce((accRow, curRow) => {
-                    return (accRow += `<tr>${csTableColumns?.reduce((accCell, curCell, index) => {
-                        return (accCell += `<td style="${cellStyle}">${curRow[curCell.columnName] || "-"}</td>`);
-                    }, "")}</tr>`);
-                }, "")}
+                                    ${groupedData?.reduce((accRow, curRow) => {
+                                        if(curRow.isGroupItem)
+                                            return (accRow += `<tr><td colspan="4" style="${cellStyle}">${curRow.name}</td></tr>`);
+                                        else
+                                            return (accRow += `<tr>${csTableColumns?.reduce((accCell, curCell, index) => {
+                                                return (accCell += `<td style="${cellStyle}">${curRow[curCell.columnName] || "-"}</td>`);
+                                            }, "")}</tr>`);
+                                    }, "")}
                                 </tbody>
                             </table>
                         </div>
@@ -597,7 +611,7 @@ sap.ui.define([
                 const style = document.createElement('style');
                 style.textContent = `@page{size: landscape;}`;
                 win.document.write(nfaTemplate);
-                win.document.title = data.Ebeln + " NFA Purchase Department";
+                win.document.title = RFQNumber + " Market Development";
                 win.document.querySelector("head").appendChild(style);
                 win.print();
                 // //win.close();
