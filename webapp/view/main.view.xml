@@ -116,7 +116,7 @@
                         >-->
                 <VBox>
                     <Label
-                        text="Manual Text 1"
+                        text="{i18n>manualText1}"
                         class="sapUiTinyMarginTop"
                         design="Bold"
                     />
@@ -135,13 +135,27 @@
                 </VBox>
                 <VBox>
                     <Label
-                        text="Comparative Analysis"
-                        class="sapUiTinyMarginTop"
+                        text="{i18n>cs}"
+                        class="sapUiLargeMarginTop"
                         design="Bold"
                     />
                     <Table
                         id="compartiveTable"
-                        class="sapUiLargeMarginTop tableCSS"
+                        class="sapUiTinyMarginTop tableCSS"
+                        noDataText="Select Filters to show data in Table"
+                        inset="false"
+                    />
+                </VBox>
+
+                <VBox>
+                    <Label
+                        text="{i18n>terms}"
+                        class="sapUiLargeMarginTop"
+                        design="Bold"
+                    />
+                    <Table
+                        id="termsTable"
+                        class="sapUiTinyMarginTop tableCSS"
                         noDataText="Select Filters to show data in Table"
                         inset="false"
                     />
@@ -154,8 +168,8 @@
 
                 <VBox>
                     <Label
-                        text="Manual Text 2"
-                        class="sapUiTinyMarginTop"
+                        text="{i18n>manualText2}"
+                        class="sapUiLargeMarginTop"
                         design="Bold"
                     />
                     <rte:RichTextEditor
@@ -203,13 +217,13 @@
             />
             <Button
                 id="savePDF"
-                text="Save"
+                text="{i18n>save}"
                 press="handleNFASave"
             />
 
             <Button
                 id="syncRFQ"
-                text="Sync RFQ's"
+                text="{i18n>rfqSync}"
                 icon="sap-icon://synchronize"
                 press="handlePressSyncRfq"
             />
@@ -218,7 +232,7 @@
                 id="syncRFQEvents"
                 type="Emphasized"
                 icon="sap-icon://synchronize"
-                text="Sync RFQ Events"
+                text="{i18n>rfqEventSync}"
                 press="handleSyncRFQEvent"
                 enabled="false"
             />

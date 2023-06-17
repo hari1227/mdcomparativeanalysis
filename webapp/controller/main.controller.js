@@ -306,8 +306,8 @@ sap.ui.define([
                     { id: "Price", name: "Rate (Rs)" },
                     { id: "gstExtra", name: "Extra GST" },
                     { id: "otherExpenses", name: "Other Charges" },
-                    { id: "comments", name: "Comments"},
-                    { id: "remark", name: "Remark" } 
+                    { id: "comments", name: "Comments" },
+                    { id: "remark", name: "Remark" }
                 ];
                 for (var i in uniquSKUs) {
 
@@ -338,6 +338,7 @@ sap.ui.define([
                 }
                 //console.log(finalData);
                 //get terms and conditions for vendor
+                let termsData = [];
                 for (let h in this.selectedEvents) {
                     let vendorList = mdUniqueVendorItems.filter(function (item) {
                         return item.eventID == this.selectedEvents[h];
@@ -348,11 +349,12 @@ sap.ui.define([
                     for (let k in mdUniqueVendorItems) {
                         vendorTerms[mdUniqueVendorItems[k].vendorTerms.vendorName] = mdUniqueVendorItems[k].vendorTerms.generalTerms;
                     }
-                    vendorTerms.ediable = false;
-                    finalData.push(vendorTerms);
+                    vendorTerms.editable = false;
+                    termsData.push(vendorTerms);
                 }
 
                 this.generateComparativeTable(finalData, mdColumns);
+                this.generateTermsTable(termsData, mdColumns)
             },
 
             generateComparativeTable: function (finalData, uniqueColumnData) {
@@ -361,52 +363,7 @@ sap.ui.define([
                 //this.nfaPackWisePrice = finalData;
                 // Create a Table for ComparativeAnalysis
                 var oTable = this.getView().byId("compartiveTable");
-                // var template;
 
-                // var finalModel = new sap.ui.model.json.JSONModel();
-                // this.getView().setModel(finalModel, "finalModel");
-                // finalModel.setData({
-                //     rows: finalData,
-                //     columns: uniqueColumnData
-                // });
-
-                // oTable.setModel(finalModel);
-                // oTable.setVisibleRowCount(finalData.length);
-                // oTable.bindColumns("/columns", function (sId, oContext) {
-                //     var columnName = oContext.getObject().columnName;
-
-                //     template = new sap.m.Label({
-                //         text: "{" + columnName + "}",
-                //         wrapping: true
-                //     });
-                //     var column;
-                //     if (columnName == "item") {
-                //         column = new sap.ui.table.AnalyticalColumn({
-                //             label: new sap.m.Label({
-                //                 text: columnName,
-                //                 wrapping: true
-                //             }),
-                //             template: template,
-                //             grouped: true
-                //         });
-                //     } else {
-                //         column = new sap.ui.table.AnalyticalColumn({
-                //             label: new sap.m.Label({
-                //                 text: columnName,
-                //                 wrapping: true
-                //             }),
-                //             template: template
-                //         });
-                //     }
-                //     return column;
-                // });
-
-                // oTable.bindRows("/rows");
-                // oTable.setEnableGrouping(true);
-                //oTable.bindItems("nfaPricingTable>/", aColList);
-
-                // Create a Table for ComparativeAnalysis
-                //var oTable = this.getView().byId("comparativeTable");
                 oTable.destroyColumns();
                 var columnName;
                 for (var j = 0; j < uniqueColumnData.length; j++) {
@@ -457,10 +414,74 @@ sap.ui.define([
                         text: name
                     };
                 };
-                aGroups.push(new Sorter("item", false, vGroup));
+                aGroups.push(new Sorter("item", true, vGroup));
                 oTable.getBinding("items").sort(aGroups);
                 let columnLength = oTable.getColumns().length;
                 oTable.getColumns()[columnLength - 1].setVisible(false);
+            },
+
+            generateTermsTable: function (finalData, uniqueColumnData) {
+
+                this.termsData = finalData;
+                // this.uniqueColumnData = uniqueColumnData;
+                //this.nfaPackWisePrice = finalData;
+                // Create a Table for ComparativeAnalysis
+                var oTable = this.getView().byId("termsTable");
+
+                oTable.destroyColumns();
+                var columnName;
+                for (var j = 0; j < uniqueColumnData.length; j++) {
+                    var oColumn = new sap.m.Column({
+
+                        header: new sap.m.Label({
+                            text: uniqueColumnData[j].columnName,
+                            wrapping: true
+                        })
+                    });
+                    oTable.addColumn(oColumn);
+                };
+
+                var oCell = [];
+                var text;
+                var that = this;
+                for (let i = 0; i < uniqueColumnData.length; i++) {
+
+                    text = uniqueColumnData[i].columnName;
+
+                    var cell1;
+                    if (text == "Item Description") {
+                        cell1 = new sap.m.Text({
+                            text: "{" + text + "}"
+                        });
+                    } else {
+                        cell1 = new sap.m.Input({
+                            value: "{" + text + "}",
+                            editable: "{editable}",
+                            wrapping: true
+                        });
+                    }
+                    oCell.push(cell1);
+                }
+                var aColList = new sap.m.ColumnListItem({
+                    cells: oCell
+                });
+                var jsonModel = new JSONModel(finalData);
+                // console.log(data);
+                oTable.setModel(jsonModel);
+                oTable.bindItems("/", aColList);
+
+                // let aGroups = [];
+                // var vGroup = function (oContext) {
+                //     var name = oContext.getProperty("item");
+                //     return {
+                //         key: name,
+                //         text: name
+                //     };
+                // };
+                // aGroups.push(new Sorter("item", true, vGroup));
+                // oTable.getBinding("items").sort(aGroups);
+                // let columnLength = oTable.getColumns().length;
+                // oTable.getColumns()[columnLength - 1].setVisible(false);
             },
 
             cellFormatter: function (sName) {
@@ -530,17 +551,18 @@ sap.ui.define([
                 const manualText1 = this.getView().byId("manualText1").getValue();
                 const manualText2 = this.getView().byId("manualText2").getValue();
                 const RFQNumber = this.getView().byId("rfqInput").getSelectedKey();
+                const termsData = this.termsData;
 
                 const { tableData: groupedData } = csTableData.reduce((acc, row) => {
-                    if(!acc.dict[row.item]) {
+                    if (!acc.dict[row.item]) {
                         acc.dict[row.item] = row.item
-                        acc.tableData.push({name: row.item, isGroupItem: true});
+                        acc.tableData.push({ name: row.item, isGroupItem: true });
                     }
                     acc.tableData.push(row)
                     return acc
-                }, {dict: {}, tableData: []})
+                }, { dict: {}, tableData: [] })
 
-                console.log({csTableData, csTableColumns})
+                console.log({ csTableData, csTableColumns })
 
                 // TODO: Update this data once get the actual data
                 const termsAndConditions = "The Specification, General terms and Conditions shall be as Under";
@@ -584,13 +606,13 @@ sap.ui.define([
                                 </thead>
                                 <tbody>
                                     ${groupedData?.reduce((accRow, curRow) => {
-                                        if(curRow.isGroupItem)
-                                            return (accRow += `<tr><td colspan="4" style="${cellStyle}">${curRow.name}</td></tr>`);
-                                        else
-                                            return (accRow += `<tr>${csTableColumns?.reduce((accCell, curCell, index) => {
-                                                return (accCell += `<td style="${cellStyle}">${curRow[curCell.columnName] || "-"}</td>`);
-                                            }, "")}</tr>`);
-                                    }, "")}
+                    if (curRow.isGroupItem)
+                        return (accRow += `<tr><td colspan="4" style="${cellStyle}">${curRow.name}</td></tr>`);
+                    else
+                        return (accRow += `<tr>${csTableColumns?.reduce((accCell, curCell, index) => {
+                            return (accCell += `<td style="${cellStyle}">${curRow[curCell.columnName] || "-"}</td>`);
+                        }, "")}</tr>`);
+                }, "")}
                                 </tbody>
                             </table>
                         </div>
@@ -599,7 +621,23 @@ sap.ui.define([
                         <div style="padding: var(--padding-buffer)">${manualText2 || ""}</div>
 
                         <!-- Terms & conditions -->
-                        <div style="padding: var(--padding-buffer)">${termsAndConditions || ""}</div>
+                        <div style="display: flex;flex-direction: column; --border-size: 1px; padding: var(--padding-buffer)">
+                            <h4 style="margin: 0">${termsAndConditions || ""}</h4>    
+                            <table border="1" style="${tableStyle}">
+                                <thead>
+                                    <tr>
+                                    ${csTableColumns.reduce((acc, curr) => acc += `<th style="${cellStyle}">${curr.columnName}</th>`, "")}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                ${termsData?.reduce((accRow, curRow) => {
+                                    return (accRow += `<tr>${csTableColumns?.reduce((accCell, curCell, index) => {
+                                        return (accCell += `<td style="${cellStyle}">${curRow[curCell.columnName] || "-"}</td>`);
+                                    }, "")}</tr>`);
+                                }, "")}
+                                </tbody>
+                            </table>
+                        </div>
 
                         
                         <div style="padding: var(--padding-buffer)"><h4>Please Approve</h4></div>
@@ -633,7 +671,7 @@ sap.ui.define([
                         processData: false,
                         data: JSON.stringify(data)
                     };
-                     this.getView().setBusy(true);
+                    this.getView().setBusy(true);
                     $.ajax(settings)
                         .done(function (response) {
                             this.getView().setBusy(false);
@@ -686,7 +724,7 @@ sap.ui.define([
                         } else {
                             this.onGoButtonPress();
                             sap.m.MessageBox.success("Data has been Synced");
-    
+
                         }
                     }.bind(this)
                     )
