@@ -37,7 +37,7 @@
                     "action": "displayMD",
                     "title": "{{flpTitle}}",
                     "subTitle": "{{flpSubtitle}}",
-                    "icon": ""
+                    "icon": "sap-icon://personnel-view"
                 }
             }
         }
